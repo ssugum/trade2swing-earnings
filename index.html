@@ -157,7 +157,7 @@ th[data-sort]:hover { color: #1e293b; }
 <div data-id="50" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-2">
   <div data-id="51" class="flex items-start gap-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-md">
     <i data-id="52" data-lucide="info" class="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5"></i>
-    <p data-id="53" class="text-[11px] text-blue-700 leading-relaxed">💡 Catalog data (sector, catalyst, signal) is always shown. Live prices &amp; financials load from Finnhub via Vercel API. Requires api/quote.js in your GitHub repo — see deployment guide. © trade2swing</p>
+    <p data-id="53" class="text-[11px] text-blue-700 leading-relaxed">💡 Catalog data (sector, catalyst, signal) is always shown. Click any <strong>ticker</strong> to open its TradingView chart. Live prices load via Vercel API (Finnhub). © trade2swing</p>
   </div>
 </div>
 
@@ -177,22 +177,15 @@ th[data-sort]:hover { color: #1e293b; }
     </div>
     <!-- Table Scroll Container -->
     <div data-id="62" id="table-wrap-g3h4" class="overflow-x-auto">
-      <table data-id="63" id="main-table-i5j6" class="w-full text-left border-collapse" style="min-width:1200px;">
+      <table data-id="63" id="main-table-i5j6" class="w-full text-left border-collapse" style="min-width:680px;">
         <thead data-id="64">
           <tr data-id="65" class="bg-slate-50 border-b-2 border-slate-200">
             <th data-id="66" class="sticky-col-1 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:90px;min-width:90px;" data-sort="t">Ticker <span data-id="67" class="sort-arrow"></span></th>
             <th data-id="68" class="sticky-col-2 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:155px;min-width:155px;" data-sort="n">Company / Sector <span data-id="69" class="sort-arrow"></span></th>
             <th data-id="70" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:68px;" data-sort="price">Price <span data-id="71" class="sort-arrow"></span></th>
             <th data-id="72" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="hi52w">52W Hi% <span data-id="73" class="sort-arrow"></span></th>
-            <th data-id="74" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="q2rev">Q−2 Rev <span data-id="75" class="sort-arrow"></span></th>
-            <th data-id="76" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q2eps">Q−2 EPS <span data-id="77" class="sort-arrow"></span></th>
-            <th data-id="78" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:78px;" data-sort="q1rev">Q−1 Rev <span data-id="79" class="sort-arrow"></span></th>
-            <th data-id="80" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q1eps">Q−1 EPS <span data-id="81" class="sort-arrow"></span></th>
-            <th data-id="82" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="annrev">Ann Rev <span data-id="83" class="sort-arrow"></span></th>
-            <th data-id="84" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:82px;" data-sort="nqRevEst">NQ Rev Est <span data-id="85" class="sort-arrow"></span></th>
-            <th data-id="86" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="nqEpsEst">NQ EPS Est <span data-id="87" class="sort-arrow"></span></th>
-            <th data-id="88" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:72px;" data-sort="vol50d">50D Vol <span data-id="89" class="sort-arrow"></span></th>
-            <th data-id="90" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold hide-mobile" style="width:175px;">Catalyst</th>
+            <th data-id="88" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:80px;" data-sort="vol50d">50D Vol <span data-id="89" class="sort-arrow"></span></th>
+            <th data-id="90" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:260px;">Catalyst</th>
             <th data-id="91" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-center" style="width:72px;" data-sort="sig">Signal <span data-id="92" class="sort-arrow"></span></th>
           </tr>
         </thead>
@@ -205,7 +198,7 @@ th[data-sort]:hover { color: #1e293b; }
 <!-- FOOTER -->
 <footer data-id="94" id="footer-m9n0" class="w-full border-t border-slate-200" style="background:#f8fafc;">
   <div data-id="95" class="max-w-[1400px] mx-auto px-4 py-3 text-center">
-    <p data-id="96" class="text-[10px] text-slate-400 leading-relaxed">© trade2swing · All rights reserved | Weekly Earnings Analysis — May 26, 2026 | Data: Finnhub (price, 52W high, 50-day avg vol, quarterly financials) | Not financial advice | trade2swing.substack.com</p>
+    <p data-id="96" class="text-[10px] text-slate-400 leading-relaxed">© trade2swing · All rights reserved | Weekly Earnings Analysis — May 26, 2026 | Data: Finnhub | Charts: TradingView | Not financial advice | trade2swing.substack.com</p>
     <p data-id="97" class="text-[10px] text-slate-300 mt-1">Made by Copilot</p>
   </div>
 </footer>
@@ -386,7 +379,7 @@ function renderTable() {
     const sorted = sortStocks(stocks, sortCol, sortDir);
     const isCollapsed = !!collapsedSectors[sectorName];
     html += `<tr class="sector-row cursor-pointer select-none" data-sector="${sectorName}">
-      <td colspan="14" class="px-3 py-2 border-y border-slate-200" style="background:#f1f5f9;">
+      <td colspan="7" class="px-3 py-2 border-y border-slate-200" style="background:#f1f5f9;">
         <div class="flex items-center justify-between">
           <span class="text-[12px] font-semibold text-slate-700 flex items-center gap-1.5">
             <span class="text-[10px]">${isCollapsed?'▶':'▼'}</span>
@@ -401,16 +394,13 @@ function renderTable() {
       sorted.forEach(stock => {
         const stripe = rowIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60';
         const p52 = pct52w(stock.price, stock.hi52w);
-        const q1yoy = formatPct(stock.q1rev, stock.q3rev);
-        const q1yoyCls = yoyColorCls(stock.q1rev, stock.q3rev);
-        const q2yoy = formatPct(stock.q2rev, stock.q4rev);
-        const q2yoyCls = yoyColorCls(stock.q2rev, stock.q4rev);
+      
 
-        html += `<tr class="${stripe} hover:bg-blue-50/60 transition-colors" style="height:34px;">
+        html += `<tr class="${stripe} hover:bg-blue-50/60 transition-colors">
           <td class="sticky-col-1 px-2 py-1.5 border-b border-slate-100" style="width:90px;min-width:90px;">
             <div class="flex items-center gap-1.5">
               <img src="https://logo.clearbit.com/${stock.d}" width="18" height="18" alt="" style="border-radius:3px;" class="logo-img flex-shrink-0" data-ticker="${stock.t}" />
-              ${tickerPill(stock.t)}
+              <a href="https://www.tradingview.com/chart/?symbol=${stock.t}" target="_blank" rel="noopener noreferrer" title="Open ${stock.t} on TradingView" class="inline-block bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded hover:bg-blue-200 hover:text-blue-900 transition-colors">${stock.t}</a>
             </div>
           </td>
           <td class="sticky-col-2 px-2 py-1.5 border-b border-slate-100" style="width:155px;min-width:155px;">
@@ -419,22 +409,9 @@ function renderTable() {
           </td>
           <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 font-medium text-slate-800">${formatPrice(stock.price)}</td>
           <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 font-semibold ${p52.cls}">${p52.txt}</td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 hide-mobile">
-            <div class="text-slate-800">${formatRev(stock.q2rev)}</div>
-            ${q2yoy ? `<div class="text-[9px] ${q2yoyCls}">${q2yoy}</div>` : ''}
-          </td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800 hide-mobile">${formatEps(stock.q2eps)}</td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100">
-            <div class="text-slate-800">${formatRev(stock.q1rev)}</div>
-            ${q1yoy ? `<div class="text-[9px] ${q1yoyCls}">${q1yoy}</div>` : ''}
-          </td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800 hide-mobile">${formatEps(stock.q1eps)}</td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800 hide-mobile">${formatRev(stock.annrev)}</td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800">${formatRev(stock.nqRevEst)}</td>
-          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800">${formatEps(stock.nqEpsEst)}</td>
           <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-500 hide-mobile">${formatVol(stock.vol50d)}</td>
-          <td class="px-2 py-1.5 text-[11px] border-b border-slate-100 text-slate-600 hide-mobile" style="max-width:175px;">
-            <div class="truncate" title="${stock.cat}">${stock.cat}</div>
+          <td class="px-2 py-1.5 text-[11px] border-b border-slate-100 text-slate-600" style="width:260px;">
+            <div style="white-space:normal;word-wrap:break-word;line-height:1.4;">${stock.cat}</div>
           </td>
           <td class="px-2 py-1.5 text-center border-b border-slate-100">${signalBadge(stock.sig)}</td>
         </tr>`;
@@ -535,10 +512,10 @@ document.getElementById('file-input-e5f6').addEventListener('change', (e) => {
 // Copy button
 document.getElementById('copy-btn-c9d0').addEventListener('click', () => {
   const filtered = getFilteredStocks();
-  const headers = ['Ticker','Company','Sector','Signal','Price','52W Hi%','Catalyst'];
+  const headers = ['Ticker','Company','Sector','Industry','Signal','Price','52W Hi%','50D Vol','Catalyst'];
   const rows = filtered.map(s => {
     const p52 = pct52w(s.price, s.hi52w);
-    return [s.t, s.n, s.s, s.sig, formatPrice(s.price), p52.txt, s.cat].join('\t');
+    return [s.t, s.n, s.s, s.ind, s.sig, formatPrice(s.price), p52.txt, formatVol(s.vol50d), s.cat].join('\t');
   });
   const tsv = [headers.join('\t'), ...rows].join('\n');
   navigator.clipboard.writeText(tsv).then(() => {
@@ -584,68 +561,33 @@ function updateStockSummary(ticker, data) {
   if (data.nqEpsEst !== undefined) stock.nqEpsEst = data.nqEpsEst;
 }
 
-// ─── FETCH LIVE DATA (Vercel API → Finnhub) ───
+// ─── FETCH LIVE DATA (Vercel API) ───
 async function fetchLiveData() {
   const btn = document.getElementById('fetch-btn-y5z6');
   btn.disabled = true;
   btn.classList.add('opacity-50','cursor-not-allowed');
 
-  // STEP 1: Batch quote fetch (price, 52W high, 50D avg vol) via Finnhub
+  // STEP 1: Batch quote fetch
   const tickers = currentStocks.map(s => s.t).join(',');
-  updateStatus('Fetching live quotes via Finnhub...');
+  updateStatus('Fetching live quotes...');
   try {
     const res = await fetch(`/api/quote?symbols=${encodeURIComponent(tickers)}`);
-    if (!res.ok) {
-      const errJson = await res.json().catch(() => ({}));
-      throw new Error(errJson.error || `API error ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`API error ${res.status}`);
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    // Finnhub response shape: { quotes: [{symbol, price, changePercent, hi52w, vol50d}, ...] }
-    const quotes = data.quotes || [];
+    // Support both Finnhub format (data.quotes[]) and legacy format
+    const quotes = data?.quotes || data?.quoteResponse?.result || [];
     quotes.forEach(q => {
-      updateStockField(q.symbol, 'price', q.price);
-      updateStockField(q.symbol, 'hi52w', q.hi52w);
-      updateStockField(q.symbol, 'vol50d', q.vol50d);
+      const sym = q.symbol || q.s;
+      updateStockField(sym, 'price', q.price ?? q.regularMarketPrice);
+      updateStockField(sym, 'hi52w', q.hi52w ?? q.fiftyTwoWeekHigh);
+      updateStockField(sym, 'vol50d', q.vol50d ?? q.fiftyDayAverageVolume ?? q.averageDailyVolume10Day);
     });
     renderTable();
-    updateStatus(`Quotes loaded · fetching quarterly financials...`);
   } catch(e) {
-    updateStatus('⚠️ Quote fetch failed: ' + e.message);
+    updateStatus('⚠️ Quote fetch failed — ensure api/quote.js is deployed on Vercel');
     btn.disabled = false;
     btn.classList.remove('opacity-50','cursor-not-allowed');
     return;
-  }
-
-  // STEP 2: Per-ticker summary (quarterly revenue, EPS, estimates) via Finnhub
-  // Batches of 5 with delay matches the throttle inside api/quote.js
-  const batches = chunkArray(currentStocks, 5);
-  let done = 0;
-  for (const batch of batches) {
-    await Promise.all(batch.map(async stock => {
-      try {
-        const res = await fetch(`/api/quote?symbols=${encodeURIComponent(stock.t)}&type=summary`);
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        // Finnhub response shape: { symbol, summary: { q1rev, q2rev, annrev, q1eps, q2eps, nqRevEst, nqEpsEst } }
-        const s = data?.summary;
-        if (s) {
-          updateStockSummary(stock.t, {
-            q1rev:     s.q1rev     ?? null,
-            q2rev:     s.q2rev     ?? null,
-            q1eps:     s.q1eps     ?? null,
-            q2eps:     s.q2eps     ?? null,
-            annrev:    s.annrev    ?? null,
-            nqRevEst:  s.nqRevEst  ?? null,
-            nqEpsEst:  s.nqEpsEst  ?? null,
-          });
-        }
-      } catch(e) { /* silently skip — catalog data still shown */ }
-      done++;
-      updateStatus(`Fetching financials ${done}/${currentStocks.length}...`);
-    }));
-    renderTable();
-    await sleep(1200); // match server-side throttle gap between Finnhub batches
   }
 
   updateStatus(`✅ ${currentStocks.length} stocks loaded · Finnhub · ${new Date().toLocaleTimeString()}`);
