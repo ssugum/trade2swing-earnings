@@ -1,140 +1,49 @@
 // api/quote.js — Vercel Serverless Function
-// Yahoo Finance proxy with cookie + crumb authentication
+// Finnhub API proxy (replaces Yahoo Finance — blocked on all cloud IPs)
+// Free tier: 60 API calls/minute  |  Needs env var: FINNHUB_API_KEY
 // © trade2swing
 
 'use strict';
 
 const https = require('https');
 
-// ── tiny HTTPS helper ──────────────────────────────────────────────────────
-function request(url, options = {}) {
+const KEY = process.env.FINNHUB_API_KEY || '';
+
+// ── Tiny HTTPS GET helper ──────────────────────────────────────────────────
+function get(path) {
+  const url = `https://finnhub.io${path}${path.includes('?') ? '&' : '?'}token=${KEY}`;
   return new Promise((resolve, reject) => {
-    const req = https.request(url, {
-      method: options.method || 'GET',
+    https.get(url, {
       headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
-          'AppleWebKit/537.36 (KHTML, like Gecko) ' +
-          'Chrome/124.0.0.0 Safari/537.36',
-        Accept: '*/*',
-        'Accept-Language': 'en-US,en;q=0.9',
-        ...(options.headers || {}),
+        'User-Agent': 'trade2swing-earnings/2.0',
+        Accept: 'application/json',
       },
-      ...options,
     }, (res) => {
       const chunks = [];
       res.on('data', (c) => chunks.push(c));
-      res.on('end', () => {
-        resolve({
-          status: res.statusCode,
-          headers: res.headers,
-          body: Buffer.concat(chunks).toString('utf8'),
-        });
-      });
-    });
-    req.on('error', reject);
-    req.end();
+      res.on('end', () =>
+        resolve({ status: res.statusCode, body: Buffer.concat(chunks).toString('utf8') })
+      );
+    }).on('error', reject);
   });
 }
 
-// ── obtain Yahoo Finance crumb (cached for the lifetime of the function) ──
-let _crumbCache = null; // { cookie, crumb, fetchedAt }
-const CRUMB_TTL_MS = 25 * 60 * 1000; // re-fetch every 25 minutes
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
-async function getYahooCrumb() {
-  const now = Date.now();
-  if (_crumbCache && now - _crumbCache.fetchedAt < CRUMB_TTL_MS) {
-    return _crumbCache;
-  }
-
-  // Step 1 – hit the consent endpoint to get a session cookie
-  const consentRes = await request('https://fc.yahoo.com/');
-  let cookie = '';
-
-  const rawCookies = consentRes.headers['set-cookie'];
-  if (Array.isArray(rawCookies) && rawCookies.length) {
-    cookie = rawCookies
-      .map((line) => line.split(';')[0].trim())
-      .join('; ');
-  }
-
-  // Step 2 – exchange cookie for a crumb token
-  const crumbRes = await request(
-    'https://query2.finance.yahoo.com/v1/test/getcrumb',
-    {
-      headers: {
-        Cookie: cookie,
-        Referer: 'https://finance.yahoo.com',
-      },
-    }
-  );
-
-  let crumb = crumbRes.body.trim();
-
-  // Retry on alternate host if response looks like HTML or JSON error
-  if (!crumb || crumb.startsWith('{') || crumb.startsWith('<')) {
-    const retry = await request(
-      'https://query1.finance.yahoo.com/v1/test/getcrumb',
-      { headers: { Cookie: cookie, Referer: 'https://finance.yahoo.com' } }
-    );
-    crumb = retry.body.trim();
-  }
-
-  if (!crumb || crumb.length > 20) {
-    throw new Error('Failed to obtain Yahoo Finance crumb');
-  }
-
-  _crumbCache = { cookie, crumb, fetchedAt: now };
-  return _crumbCache;
+function safeJson(str) {
+  try { return JSON.parse(str); } catch { return null; }
 }
 
-// ── build quote URL ────────────────────────────────────────────────────────
-function quoteUrl(symbols, crumb) {
-  const syms = encodeURIComponent(symbols.join(','));
-  return (
-    `https://query1.finance.yahoo.com/v7/finance/quote` +
-    `?symbols=${syms}` +
-    `&fields=regularMarketPrice,regularMarketChangePercent,` +
-    `fiftyTwoWeekHigh,regularMarketVolume,averageDailyVolume10Day,` +
-    `averageDailyVolume3Month,fiftyDayAverageVolume,` +
-    `trailingPE,forwardPE,marketCap,shortName,longName` +
-    `&crumb=${encodeURIComponent(crumb)}`
-  );
-}
-
-// ── build summary/financials URL ───────────────────────────────────────────
-function summaryUrl(symbol, crumb) {
-  return (
-    `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(symbol)}` +
-    `?modules=incomeStatementHistory,earningsTrend,defaultKeyStatistics` +
-    `&crumb=${encodeURIComponent(crumb)}`
-  );
-}
-
-// ── parse quarterly revenue & EPS from quoteSummary ───────────────────────
-function parseSummary(json) {
-  try {
-    const qs = json.quoteSummary;
-    if (!qs || qs.error) return null;
-    const result = qs.result && qs.result[0];
-    if (!result) return null;
-
-    const stmts = result.incomeStatementHistory?.incomeStatementHistory || [];
-    const quarters = stmts.slice(0, 4).map((s) => ({
-      date: s.endDate?.fmt || '',
-      revenue: s.totalRevenue?.raw || null,
-      netIncome: s.netIncome?.raw || null,
-    }));
-
-    const trend = result.earningsTrend?.trend || [];
-    const nqTrend = trend.find((t) => t.period === '+1q');
-    const nqRevEst = nqTrend?.revenueEstimate?.avg?.raw || null;
-    const nqEpsEst = nqTrend?.earningsEstimate?.avg?.raw || null;
-
-    return { quarters, nqRevEst, nqEpsEst };
-  } catch {
-    return null;
+// ── Rate-limit-aware batch executor ───────────────────────────────────────
+async function throttledMap(items, concurrency, fn) {
+  const results = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(fn));
+    results.push(...batchResults);
+    if (i + concurrency < items.length) await sleep(1100);
   }
+  return results;
 }
 
 // ── CORS headers ───────────────────────────────────────────────────────────
@@ -145,7 +54,28 @@ const CORS = {
   'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
 };
 
-// ── main handler ───────────────────────────────────────────────────────────
+// ── Revenue extractor from SEC filings ─────────────────────────────────────
+function extractRevenue(report) {
+  const ic = report?.report?.ic || [];
+  const candidates = [
+    'Revenues',
+    'RevenueFromContractWithCustomerExcludingAssessedTax',
+    'RevenueFromContractWithCustomerIncludingAssessedTax',
+    'NetRevenues',
+    'SalesRevenueNet',
+    'SalesRevenueGoodsNet',
+    'RevenueNet',
+    'Revenues1',
+  ];
+  for (const c of candidates) {
+    const line = ic.find((x) => x.concept === c);
+    if (line?.value != null) return line.value;
+  }
+  const nums = ic.map((x) => x.value).filter((v) => typeof v === 'number' && v > 0);
+  return nums.length ? Math.max(...nums) : null;
+}
+
+// ── Main handler ───────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, CORS);
@@ -153,90 +83,90 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const { symbols: rawSymbols = '', type = 'quote' } = req.query || {};
-  const symbols = rawSymbols
-    .split(',')
-    .map((s) => s.trim().toUpperCase())
-    .filter(Boolean);
+  if (!KEY) {
+    res.writeHead(500, { 'Content-Type': 'application/json', ...CORS });
+    res.end(JSON.stringify({
+      error: 'FINNHUB_API_KEY is not set. Add it in Vercel → Settings → Environment Variables.',
+    }));
+    return;
+  }
+
+  const { symbols: raw = '', type = 'quote' } = req.query || {};
+  const symbols = raw.split(',').map((s) => s.trim().toUpperCase()).filter(Boolean);
 
   if (!symbols.length) {
     res.writeHead(400, { 'Content-Type': 'application/json', ...CORS });
-    res.end(JSON.stringify({ error: 'symbols query param required' }));
+    res.end(JSON.stringify({ error: 'symbols query param required (e.g. ?symbols=MRVL,ZS)' }));
     return;
   }
 
   try {
-    const { cookie, crumb } = await getYahooCrumb();
-
-    // ── Batch quote ────────────────────────────────────────────────────────
     if (type === 'quote') {
-      const url = quoteUrl(symbols, crumb);
-      const yfRes = await request(url, {
-        headers: { Cookie: cookie, Referer: 'https://finance.yahoo.com' },
+      const quotes = await throttledMap(symbols, 5, async (sym) => {
+        try {
+          const [qRes, mRes] = await Promise.all([
+            get(`/api/v1/quote?symbol=${encodeURIComponent(sym)}`),
+            get(`/api/v1/stock/metric?symbol=${encodeURIComponent(sym)}&metric=all`),
+          ]);
+          const q = safeJson(qRes.body) || {};
+          const metric = (safeJson(mRes.body) || {}).metric || {};
+          const vol10d = metric['10DayAverageTradingVolume'];
+          const vol3m  = metric['3MonthAverageTradingVolume'];
+          const vol50d = vol10d != null
+            ? Math.round(vol10d * 1_000_000)
+            : vol3m != null ? Math.round(vol3m * 1_000_000) : null;
+          return {
+            symbol:        sym,
+            price:         q.c   ?? null,
+            changePercent: q.dp  ?? null,
+            hi52w:         metric['52WeekHigh'] ?? null,
+            vol50d,
+          };
+        } catch {
+          return { symbol: sym, price: null, changePercent: null, hi52w: null, vol50d: null };
+        }
       });
-
-      if (yfRes.status !== 200) {
-        _crumbCache = null; // bust stale crumb
-        res.writeHead(yfRes.status, { 'Content-Type': 'application/json', ...CORS });
-        res.end(JSON.stringify({
-          error: `Yahoo Finance responded with ${yfRes.status}`,
-          detail: yfRes.body.slice(0, 400),
-        }));
-        return;
-      }
-
-      const data = JSON.parse(yfRes.body);
-      const quotes = (data.quoteResponse?.result || []).map((q) => ({
-        symbol: q.symbol,
-        price: q.regularMarketPrice,
-        changePercent: q.regularMarketChangePercent,
-        high52w: q.fiftyTwoWeekHigh,
-        volume: q.regularMarketVolume,
-        avgVol10d: q.averageDailyVolume10Day,
-        avgVol3m: q.averageDailyVolume3Month,
-        avgVol50d: q.fiftyDayAverageVolume,
-        pe: q.trailingPE,
-        forwardPe: q.forwardPE,
-        marketCap: q.marketCap,
-        name: q.shortName || q.longName,
-      }));
-
       res.writeHead(200, { 'Content-Type': 'application/json', ...CORS });
       res.end(JSON.stringify({ quotes }));
       return;
     }
 
-    // ── Per-ticker financials + estimates ──────────────────────────────────
     if (type === 'summary') {
-      const symbol = symbols[0];
-      const url = summaryUrl(symbol, crumb);
-      const yfRes = await request(url, {
-        headers: { Cookie: cookie, Referer: 'https://finance.yahoo.com' },
-      });
-
-      if (yfRes.status !== 200) {
-        _crumbCache = null;
-        res.writeHead(yfRes.status, { 'Content-Type': 'application/json', ...CORS });
-        res.end(JSON.stringify({
-          error: `Yahoo Finance responded with ${yfRes.status}`,
-          detail: yfRes.body.slice(0, 400),
-        }));
-        return;
-      }
-
-      const data = JSON.parse(yfRes.body);
-      const summary = parseSummary(data);
-
+      const sym = symbols[0];
+      const [epsHistRes, epsEstRes, revEstRes, finRes] = await Promise.all([
+        get(`/api/v1/stock/earnings?symbol=${encodeURIComponent(sym)}&limit=4`),
+        get(`/api/v1/stock/eps-estimate?symbol=${encodeURIComponent(sym)}&freq=quarterly`),
+        get(`/api/v1/stock/revenue-estimate?symbol=${encodeURIComponent(sym)}&freq=quarterly`),
+        get(`/api/v1/financials-reported?symbol=${encodeURIComponent(sym)}&freq=quarterly`),
+      ]);
+      const epsHist = safeJson(epsHistRes.body) || [];
+      const q1eps = epsHist[0]?.actual ?? null;
+      const q2eps = epsHist[1]?.actual ?? null;
+      const epsEstData = (safeJson(epsEstRes.body) || {}).data || [];
+      const now = Date.now();
+      const nqEpsRow = epsEstData.find((e) => e.period && new Date(e.period).getTime() > now) || epsEstData[0];
+      const nqEpsEst = nqEpsRow?.epsAvg ?? null;
+      const revEstData = (safeJson(revEstRes.body) || {}).data || [];
+      const nqRevRow = revEstData.find((e) => e.period && new Date(e.period).getTime() > now) || revEstData[0];
+      const nqRevEst = nqRevRow?.revenueAvg ?? null;
+      const finData  = safeJson(finRes.body) || {};
+      const reports  = (finData.data || []).filter((r) =>
+        ['10-Q', '20-F', '6-K', '10-K'].includes(r.form)
+      );
+      const q1rev = reports[0] ? extractRevenue(reports[0]) : null;
+      const q2rev = reports[1] ? extractRevenue(reports[1]) : null;
+      const qtrs = reports.slice(0, 4).map(extractRevenue).filter((v) => v != null);
+      const annrev = qtrs.length > 0 ? qtrs.reduce((a, b) => a + b, 0) : null;
       res.writeHead(200, { 'Content-Type': 'application/json', ...CORS });
-      res.end(JSON.stringify({ symbol, summary }));
+      res.end(JSON.stringify({ symbol: sym, summary: { q1rev, q2rev, annrev, q1eps, q2eps, nqRevEst, nqEpsEst } }));
       return;
     }
 
     res.writeHead(400, { 'Content-Type': 'application/json', ...CORS });
-    res.end(JSON.stringify({ error: `Unknown type: ${type}` }));
+    res.end(JSON.stringify({ error: `Unknown type: "${type}". Use type=quote or type=summary.` }));
 
   } catch (err) {
-    console.error('[api/quote] Error:', err.message);
+    console.error('[api/quote] Unhandled error:', err.message);
     res.writeHead(500, { 'Content-Type': 'application/json', ...CORS });
     res.end(JSON.stringify({ error: err.message }));
   }
