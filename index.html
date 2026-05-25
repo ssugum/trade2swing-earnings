@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weekly Earnings Analysis — trade2swing</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' },
+        slate: { 50:'#f8fafc',100:'#f1f5f9',200:'#e2e8f0',300:'#cbd5e1',400:'#94a3b8',500:'#64748b',600:'#475569',700:'#334155',800:'#1e293b',900:'#0f172a' },
+        success: { 100:'#dcfce7',600:'#16a34a',700:'#15803d' },
+        danger: { 100:'#fee2e2',600:'#dc2626',700:'#b91c1c' },
+        warn: { 100:'#fef3c7',600:'#d97706',700:'#b45309' }
+      },
+      fontFamily: {
+        sans: ['system-ui','-apple-system','sans-serif']
+      }
+    }
+  }
+};
+</script>
+<style>
+:root {
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-header: #0f172a;
+  --accent: #2563eb;
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --muted: #64748b;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-page); color: var(--text); margin: 0; }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+.sticky-col-1 { position: sticky; left: 0; z-index: 10; background: inherit; }
+.sticky-col-2 { position: sticky; left: 90px; z-index: 10; background: inherit; }
+thead .sticky-col-1, thead .sticky-col-2 { background: #f8fafc; z-index: 12; }
+.sector-row .sticky-col-1 { background: #f1f5f9; }
+.sector-row .sticky-col-2 { background: #f1f5f9; }
+tr:nth-child(even):not(.sector-row) .sticky-col-1,
+tr:nth-child(even):not(.sector-row) .sticky-col-2 { background: #f9fafb; }
+tr:nth-child(odd):not(.sector-row) .sticky-col-1,
+tr:nth-child(odd):not(.sector-row) .sticky-col-2 { background: #ffffff; }
+tr:hover:not(.sector-row) .sticky-col-1,
+tr:hover:not(.sector-row) .sticky-col-2 { background: #eff6ff !important; }
+.sticky-col-1::after, .sticky-col-2::after {
+  content: ''; position: absolute; top: 0; right: -1px; bottom: 0; width: 1px; background: var(--border);
+}
+.sticky-col-2::after { right: -1px; }
+th[data-sort] { cursor: pointer; user-select: none; }
+th[data-sort]:hover { color: #1e293b; }
+.sort-arrow { font-size: 9px; margin-left: 2px; opacity: 0.6; }
+.toast {
+  position: fixed; bottom: 24px; right: 24px; padding: 10px 18px; border-radius: 8px;
+  background: #0f172a; color: #fff; font-size: 13px; z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18); transform: translateY(100px); opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.banner-enter { animation: slideDown 0.3s ease; }
+@keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.gradient-line {
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa, #3b82f6, #2563eb);
+}
+@media (max-width: 767px) {
+  .hide-mobile { display: none !important; }
+  .sticky-col-1 { width: 70px !important; min-width: 70px !important; max-width: 70px !important; }
+  .sticky-col-2 { left: 70px !important; width: 120px !important; min-width: 120px !important; max-width: 120px !important; }
+}
+</style>
+</head>
+<body data-id="0" class="min-h-screen">
+<app-icon data-id="1" hidden data-icon="trending-up" data-palette="Blue"></app-icon>
+<app-disclaimer data-id="2" intent="financial"></app-disclaimer>
+
+<!-- HEADER -->
+<header data-id="3" id="header-main-a1b2" class="w-full" style="background:#0f172a;">
+  <div data-id="4" class="max-w-[1400px] mx-auto px-4 md:px-6 py-3 flex flex-wrap items-center justify-between gap-2">
+    <div data-id="5" class="flex items-center gap-3 min-w-0">
+      <span data-id="6" class="text-white text-xl font-bold flex items-center gap-2 whitespace-nowrap">
+        <i data-id="7" data-lucide="bar-chart-3" class="w-5 h-5 text-blue-400"></i>
+        Weekly Earnings Analysis
+      </span>
+      <span data-id="8" class="text-slate-400 text-xs hidden sm:inline whitespace-nowrap">50 Stocks Reporting · Week of May 26, 2026</span>
+    </div>
+    <div data-id="9" class="flex items-center gap-2">
+      <span data-id="10" class="bg-blue-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wide">trade2swing</span>
+      <button data-id="11" id="upload-btn-c3d4" class="flex items-center gap-1.5 text-white border border-slate-500 rounded-md px-3 py-1.5 text-xs font-medium hover:bg-slate-800 transition-colors">
+        <i data-id="12" data-lucide="folder-up" class="w-3.5 h-3.5"></i>
+        Upload ER.txt
+      </button>
+      <input data-id="13" type="file" id="file-input-e5f6" accept=".txt" class="hidden" />
+    </div>
+  </div>
+</header>
+<div data-id="14" class="gradient-line"></div>
+
+<!-- MOBILE SUBTITLE -->
+<div data-id="15" class="sm:hidden px-4 py-1.5 bg-slate-900 text-slate-400 text-[11px]">50 Stocks Reporting · Week of May 26, 2026</div>
+
+<!-- HOT SECTOR BANNERS -->
+<div data-id="16" id="banners-g7h8" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-3 flex flex-col gap-2">
+  <div data-id="17" id="banner-1-i9j0" class="banner-enter flex items-start justify-between gap-2 p-3 rounded-lg border-l-4" style="background:#fff7ed;border-left-color:#f97316;">
+    <p data-id="18" class="text-xs text-orange-900 leading-relaxed"><strong data-id="19">🔥 AI Semiconductors HOT</strong> — MRVL, SNPS, PLAB: Hyperscaler AI capex at record highs; custom ASIC demand surging. High beat probability.</p>
+    <button data-id="20" class="dismiss-banner-btn flex-shrink-0 text-orange-400 hover:text-orange-700 p-0.5" data-target="banner-1-i9j0"><i data-id="21" data-lucide="x" class="w-4 h-4"></i></button>
+  </div>
+  <div data-id="22" id="banner-2-k1l2" class="banner-enter flex items-start justify-between gap-2 p-3 rounded-lg border-l-4" style="background:#eff6ff;border-left-color:#3b82f6;">
+    <p data-id="23" class="text-xs text-blue-900 leading-relaxed"><strong data-id="24">🛡️ Cybersecurity Momentum</strong> — ZS, S, OKTA: Zero trust mandates accelerating ARR; post-breach spending at all-time high.</p>
+    <button data-id="25" class="dismiss-banner-btn flex-shrink-0 text-blue-400 hover:text-blue-700 p-0.5" data-target="banner-2-k1l2"><i data-id="26" data-lucide="x" class="w-4 h-4"></i></button>
+  </div>
+  <div data-id="27" id="banner-3-m3n4" class="banner-enter flex items-start justify-between gap-2 p-3 rounded-lg border-l-4" style="background:#fefce8;border-left-color:#eab308;">
+    <p data-id="28" class="text-xs text-yellow-900 leading-relaxed"><strong data-id="29">⚡ China Tech Wild Cards</strong> — PDD, XPEV, WB, JOYY: US tariff headwinds vs. cheap valuations. High volatility on results.</p>
+    <button data-id="30" class="dismiss-banner-btn flex-shrink-0 text-yellow-400 hover:text-yellow-700 p-0.5" data-target="banner-3-m3n4"><i data-id="31" data-lucide="x" class="w-4 h-4"></i></button>
+  </div>
+</div>
+
+<!-- CONTROLS BAR -->
+<div data-id="32" id="controls-o5p6" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-3">
+  <div data-id="33" class="bg-white rounded-lg border border-slate-200 p-2.5 flex flex-wrap items-center gap-2">
+    <div data-id="34" class="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+      <select data-id="35" id="sector-filter-q7r8" class="text-xs border border-slate-200 rounded-md px-2.5 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-[130px]">
+        <option data-id="36" value="">All Sectors</option>
+      </select>
+      <select data-id="37" id="signal-filter-s9t0" class="text-xs border border-slate-200 rounded-md px-2.5 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-[110px]">
+        <option data-id="38" value="">All Signals</option>
+        <option data-id="39" value="bullish">🟢 Bullish</option>
+        <option data-id="40" value="bearish">🔴 Bearish</option>
+        <option data-id="41" value="neutral">🟡 Neutral</option>
+      </select>
+      <div data-id="42" class="relative flex-1 min-w-[150px] max-w-[260px]">
+        <i data-id="43" data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input data-id="44" id="search-input-u1v2" type="text" placeholder="Search ticker or company…" class="w-full text-xs border border-slate-200 rounded-md pl-8 pr-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+      </div>
+      <span data-id="45" id="stock-count-w3x4" class="text-[11px] text-slate-500 whitespace-nowrap">50 stocks shown</span>
+    </div>
+    <div data-id="46" class="flex items-center gap-2">
+      <button data-id="47" id="fetch-btn-y5z6" class="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3.5 py-1.5 rounded-md transition-colors whitespace-nowrap">
+        <i data-id="48" data-lucide="radio" class="w-3.5 h-3.5"></i>
+        Fetch Live Data
+      </button>
+      <span data-id="49" id="fetch-status-a7b8" class="text-[11px] text-slate-500 whitespace-nowrap"></span>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE DATA NOTICE -->
+<div data-id="50" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-2">
+  <div data-id="51" class="flex items-start gap-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-md">
+    <i data-id="52" data-lucide="info" class="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5"></i>
+    <p data-id="53" class="text-[11px] text-blue-700 leading-relaxed">Preview shows catalog data. Click <strong data-id="54">'Fetch Live Data'</strong> on Vercel deployment to populate prices, volume &amp; financials from Yahoo Finance. 50-day avg volume via Yahoo Finance (FMP fallback). © trade2swing</p>
+  </div>
+</div>
+
+<!-- MAIN TABLE -->
+<main data-id="55" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-3 mb-6">
+  <div data-id="56" class="bg-white rounded-lg border border-slate-200 shadow-sm">
+    <!-- Table Toolbar -->
+    <div data-id="57" class="flex items-center justify-between px-3 py-2 border-b border-slate-100">
+      <h2 data-id="58" class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+        <i data-id="59" data-lucide="table-2" class="w-4 h-4 text-slate-400"></i>
+        Earnings Calendar
+      </h2>
+      <button data-id="60" id="copy-btn-c9d0" class="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 border border-slate-200 rounded px-2 py-1 transition-colors">
+        <i data-id="61" data-lucide="clipboard-copy" class="w-3 h-3"></i>
+        <span data-id="62" id="copy-text-e1f2">Copy</span>
+      </button>
+    </div>
+    <!-- Table Scroll Container -->
+    <div data-id="63" id="table-wrap-g3h4" class="overflow-x-auto">
+      <table data-id="64" id="main-table-i5j6" class="w-full text-left border-collapse" style="min-width:1200px;">
+        <thead data-id="65">
+          <tr data-id="66" class="bg-slate-50 border-b-2 border-slate-200">
+            <th data-id="67" class="sticky-col-1 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:90px;min-width:90px;" data-sort="t">Ticker <span data-id="68" class="sort-arrow"></span></th>
+            <th data-id="69" class="sticky-col-2 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:155px;min-width:155px;" data-sort="n">Company / Sector <span data-id="70" class="sort-arrow"></span></th>
+            <th data-id="71" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:68px;" data-sort="price">Price <span data-id="72" class="sort-arrow"></span></th>
+            <th data-id="73" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="hi52w">52W Hi% <span data-id="74" class="sort-arrow"></span></th>
+            <th data-id="75" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="q2rev">Q−2 Rev <span data-id="76" class="sort-arrow"></span></th>
+            <th data-id="77" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q2eps">Q−2 EPS <span data-id="78" class="sort-arrow"></span></th>
+            <th data-id="79" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:78px;" data-sort="q1rev">Q−1 Rev <span data-id="80" class="sort-arrow"></span></th>
+            <th data-id="81" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q1eps">Q−1 EPS <span data-id="82" class="sort-arrow"></span></th>
+            <th data-id="83" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="annrev">Ann Rev <span data-id="84" class="sort-arrow"></span></th>
+            <th data-id="85" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:82px;" data-sort="nqrevest">NQ Rev Est <span data-id="86" class="sort-arrow"></span></th>
+            <th data-id="87" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="nqepsest">NQ EPS Est <span data-id="88" class="sort-arrow"></span></th>
+            <th data-id="89" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:72px;" data-sort="vol50d">50D Vol <span data-id="90" class="sort-arrow"></span></th>
+            <th data-id="91" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold hide-mobile" style="width:175px;">Catalyst</th>
+            <th data-id="92" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-center" style="width:72px;" data-sort="sig">Signal <span data-id="93" class="sort-arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody data-id="94" id="table-body-k7l8"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer data-id="95" id="footer-m9n0" class="w-full border-t border-slate-200" style="background:#f8fafc;">
+  <div data-id="96" class="max-w-[1400px] mx-auto px-4 py-3 text-center">
+    <p data-id="97" class="text-[10px] text-slate-400 leading-relaxed">© trade2swing · All rights reserved | Weekly Earnings Analysis — May 26, 2026 | Data: Yahoo Finance (50-day avg vol via Yahoo Finance; FMP fallback) | Not financial advice | trade2swing.substack.com</p>
+    <p data-id="98" class="text-[10px] text-slate-300 mt-1">Made by Copilot</p>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div data-id="99" id="toast-o1p2" class="toast"></div>
+
+<script>
+lucide.createIcons();
+
+// ─── DATA ───
+const STOCK_CATALOG = [
+  {t:'MRVL',n:'Marvell Technology',s:'🔥 AI Semiconductors',ind:'AI/Data Center Chips',d:'marvell.com',cat:'Custom AI ASICs for Amazon & Google; CoCoNet chip in production; DC revenue +78% YoY expected',sig:'bullish'},
+  {t:'SNPS',n:'Synopsys',s:'🔥 AI Semiconductors',ind:'EDA / Chip Design Tools',d:'synopsys.com',cat:'AI chip complexity driving EDA tool demand; Ansys simulation acquisition driving cross-sell',sig:'bullish'},
+  {t:'PLAB',n:'Photronics',s:'🔥 AI Semiconductors',ind:'Semiconductor Photomasks',d:'photronics.com',cat:'Leading-edge photomask demand from TSMC/Samsung AI chip runs; capacity utilization high',sig:'bullish'},
+  {t:'ZS',n:'Zscaler',s:'🛡️ Cybersecurity',ind:'Zero Trust / SASE',d:'zscaler.com',cat:'Zero trust mandates from enterprises & govt; SASE platform consolidation; large deal velocity',sig:'bullish'},
+  {t:'S',n:'SentinelOne',s:'🛡️ Cybersecurity',ind:'AI-Native Security',d:'sentinelone.com',cat:'Purple AI analyst copilot gaining enterprise traction; competitive wins from legacy AV replacement',sig:'bullish'},
+  {t:'OKTA',n:'Okta',s:'🛡️ Cybersecurity',ind:'Identity Access Mgmt',d:'okta.com',cat:'Identity security as compliance mandate; workforce + customer identity platform expansion',sig:'bullish'},
+  {t:'CRM',n:'Salesforce',s:'☁️ Enterprise Software',ind:'CRM / AI Agents',d:'salesforce.com',cat:'Agentforce AI agent platform ramping; data cloud seat expansion; enterprise AI upsell cycle',sig:'bullish'},
+  {t:'SNOW',n:'Snowflake',s:'☁️ Enterprise Software',ind:'Cloud Data Platform',d:'snowflake.com',cat:'Cortex AI workloads consuming more compute; consumption model recovering from trough',sig:'bullish'},
+  {t:'MDB',n:'MongoDB',s:'☁️ Enterprise Software',ind:'Database / AI',d:'mongodb.com',cat:'Atlas AI vector search integration; developer platform stickiness; enterprise app modernization',sig:'bullish'},
+  {t:'ADSK',n:'Autodesk',s:'☁️ Enterprise Software',ind:'Design / CAD Tools',d:'autodesk.com',cat:'Forma AI architecture platform; AEC subscription transition complete; AI generative design',sig:'bullish'},
+  {t:'ESTC',n:'Elastic',s:'☁️ Enterprise Software',ind:'Search / Analytics',d:'elastic.co',cat:'Elasticsearch AI semantic search; SIEM/security analytics revenue growing; Elastic AI assistant',sig:'bullish'},
+  {t:'BOX',n:'Box',s:'☁️ Enterprise Software',ind:'Cloud Content Mgmt',d:'box.com',cat:'Box AI document intelligence rollout; enterprise content workflow automation; NRR stabilizing',sig:'neutral'},
+  {t:'NTNX',n:'Nutanix',s:'☁️ Enterprise Software',ind:'Hybrid Cloud Infra',d:'nutanix.com',cat:'VMware customer displacement post-Broadcom acquisition; AI infra subscription model growth',sig:'bullish'},
+  {t:'BRZE',n:'Braze',s:'☁️ Enterprise Software',ind:'Customer Engagement',d:'braze.com',cat:'AI-personalized multi-channel marketing; enterprise retention platform wins; NRR expansion',sig:'bullish'},
+  {t:'NCNO',n:'nCino',s:'☁️ Enterprise Software',ind:'Banking Software',d:'ncino.com',cat:'Bank digitization platform; mortgage origination automation; credit union expansion pipeline',sig:'neutral'},
+  {t:'PATH',n:'UiPath',s:'☁️ Enterprise Software',ind:'RPA / AI Automation',d:'uipath.com',cat:'Agentic AI + RPA convergence; enterprise process automation; SAP & ServiceNow integration deals',sig:'bullish'},
+  {t:'DELL',n:'Dell Technologies',s:'💻 IT Hardware',ind:'AI Servers / Storage',d:'dell.com',cat:'PowerEdge AI server backlog; ISG AI infrastructure orders from hyperscalers; PC refresh cycle',sig:'bullish'},
+  {t:'HPQ',n:'HP Inc',s:'💻 IT Hardware',ind:'PC / Printing',d:'hp.com',cat:'AI PC upgrade cycle beginning; commercial PC fleet refresh; OmniBook AI laptop line',sig:'bullish'},
+  {t:'NTAP',n:'NetApp',s:'💻 IT Hardware',ind:'Hybrid Cloud Storage',d:'netapp.com',cat:'AI data management platform; cloud storage ARR growth; hyperscaler partnerships expanding',sig:'bullish'},
+  {t:'COST',n:'Costco',s:'🛒 Consumer Retail',ind:'Warehouse Club',d:'costco.com',cat:'Membership fee increase cycling through P&L; treasure hunt model resilience; strong traffic comps',sig:'bullish'},
+  {t:'BBY',n:'Best Buy',s:'🛒 Consumer Retail',ind:'Electronics Retail',d:'bestbuy.com',cat:'AI PC upgrade cycle benefits electronics retail; TV & appliance refresh; services segment growth',sig:'neutral'},
+  {t:'DKS',n:"Dick's Sporting Goods",s:'🛒 Consumer Retail',ind:'Sporting Goods',d:'dickssportinggoods.com',cat:'House of Sport flagship stores driving traffic; premium athletic consumer resilience; new categories',sig:'bullish'},
+  {t:'ANF',n:'Abercrombie & Fitch',s:'🛒 Consumer Retail',ind:'Apparel Retail',d:'abercrombie.com',cat:'Brand transformation success; Hollister + ANF both growing; international expansion; margin expansion',sig:'bullish'},
+  {t:'BBWI',n:'Bath & Body Works',s:'🛒 Consumer Retail',ind:'Specialty Retail',d:'bathandbodyworks.com',cat:'40M+ loyalty members; home fragrance category leader; cost restructuring; new home & body SKUs',sig:'neutral'},
+  {t:'GAP',n:'Gap Inc',s:'🛒 Consumer Retail',ind:'Apparel Retail',d:'gap.com',cat:'Old Navy stabilization; Athleta recovery underway; operational discipline; Gap brand refresh in progress',sig:'neutral'},
+  {t:'KSS',n:"Kohl's",s:'🛒 Consumer Retail',ind:'Department Stores',d:'kohls.com',cat:"Struggling traffic trends; Sephora-in-Kohl's bright spot; turnaround execution under scrutiny",sig:'bearish'},
+  {t:'BURL',n:'Burlington Stores',s:'🛒 Consumer Retail',ind:'Off-Price Retail',d:'burlington.com',cat:'Value retail trade-down trend; new store openings accelerating; comparable sales improvement',sig:'bullish'},
+  {t:'AZO',n:'AutoZone',s:'🛒 Consumer Retail',ind:'Auto Parts Retail',d:'autozone.com',cat:'Aging US vehicle fleet tailwind; DIFM professional sales growing; Mexico/Brazil expansion',sig:'bullish'},
+  {t:'CPRI',n:'Capri Holdings',s:'🛒 Consumer Retail',ind:'Luxury Fashion',d:'capriholdings.com',cat:'Versace & Michael Kors brand turnaround; China luxury recovery; post-merger strategy reset',sig:'neutral'},
+  {t:'HRL',n:'Hormel Foods',s:'🍖 Consumer Staples',ind:'Packaged Foods',d:'hormelfoods.com',cat:'Commodity cost normalization; Planters & Skippy brand strength; foodservice channel recovery',sig:'neutral'},
+  {t:'BNS',n:'Scotiabank',s:'🏦 Financials',ind:'Canadian Banking',d:'scotiabank.com',cat:'Bank of Canada rate cuts benefit NIM; LatAm growth strategy; Canadian mortgage stabilizing',sig:'neutral'},
+  {t:'CM',n:'CIBC',s:'🏦 Financials',ind:'Canadian Banking',d:'cibc.com',cat:'Rate cut tailwinds; US commercial banking growth; Canadian housing market exposure watch',sig:'neutral'},
+  {t:'QFIN',n:'360 DigiTech',s:'🏦 Financials',ind:'China Fintech / Lending',d:'360fh.com',cat:'China consumer credit recovery; AI-driven credit risk scoring; strong shareholder return program',sig:'neutral'},
+  {t:'PDD',n:'PDD Holdings',s:'🌏 China Tech',ind:'E-Commerce (Temu/PDD)',d:'pinduoduo.com',cat:'Temu US GMV impacted by tariff & de minimis rule changes; domestic Pinduoduo still resilient',sig:'bearish'},
+  {t:'WB',n:'Weibo',s:'🌏 China Tech',ind:'Social Media',d:'weibo.com',cat:'China digital ad market recovery; live streaming monetization; AI-generated content tools rolling out',sig:'neutral'},
+  {t:'JOYY',n:'JOYY Group',s:'🌏 China Tech',ind:'Live Streaming',d:'joyy.com',cat:'Bigo Live international MAU growth; diversification away from China-only risk; YSXT expansion',sig:'neutral'},
+  {t:'XPEV',n:'XPeng',s:'🌏 China Tech',ind:'Electric Vehicles',d:'xpeng.com',cat:'MONA M03 mass market EV scaling; XNGP highway AI driving expansion; EU delivery pipeline',sig:'bullish'},
+  {t:'MOD',n:'Modine Manufacturing',s:'🏭 Industrials',ind:'Thermal Management',d:'modine.com',cat:'Data center liquid cooling demand surge (ClimateX segment); EV thermal systems growth',sig:'bullish'},
+  {t:'AMSC',n:'Amer. Superconductor',s:'🏭 Industrials',ind:'Grid / Clean Energy',d:'amsc.com',cat:'Grid modernization & power grid bottleneck solutions; US Navy ship contracts; offshore wind MVAC',sig:'bullish'},
+  {t:'SKY',n:'Skyline Champion',s:'🏭 Industrials',ind:'Manufactured Housing',d:'skylinechampion.com',cat:'Affordable housing demand; factory-built homes 40% cheaper; community development pipeline',sig:'bullish'},
+  {t:'CRGO',n:'Freightos',s:'🏭 Industrials',ind:'Digital Freight Platform',d:'freightos.com',cat:'Air freight digitization; tariff-driven cargo rerouting creating platform demand; booking growth',sig:'neutral'},
+  {t:'DY',n:'Dycom Industries',s:'🏭 Industrials',ind:'Telecom Infrastructure',d:'dycomind.com',cat:'Broadband BEAD program deployments; fiber to rural America; 5G densification backlog',sig:'bullish'},
+  {t:'ESLT',n:'Elbit Systems',s:'🏭 Industrials',ind:'Defense Electronics',d:'elbitsystems.com',cat:'NATO defense spending surge; drone warfare electronics; C4ISR systems & Iron Dome adjacency',sig:'bullish'},
+  {t:'HEI',n:'HEICO',s:'🏭 Industrials',ind:'Aerospace Components',d:'heico.com',cat:'PMA parts demand for aging aircraft fleets; MRO market growing; defense electronics segment',sig:'bullish'},
+  {t:'OOMA',n:'Ooma',s:'📡 Communications',ind:'VoIP / UCaaS',d:'ooma.com',cat:'SMB UCaaS growth; AirDial copper phone replacement; steady subscription recurring revenue model',sig:'neutral'},
+  {t:'API',n:'Agora',s:'📡 Communications',ind:'Video / Audio APIs',d:'agora.io',cat:'Real-time communication APIs; AI video processing; developer platform Asia-Pacific expansion',sig:'neutral'},
+  {t:'SQM',n:'Sociedad Química',s:'⛏️ Materials',ind:'Lithium / Specialty Chem',d:'sqm.com',cat:'Lithium price recovery watch; EV battery supply chain; Chile government contract renegotiation',sig:'neutral'},
+  {t:'SVM',n:'Silvercorp Metals',s:'⛏️ Materials',ind:'Silver Mining',d:'silvercorpmetals.com',cat:'Silver price strength; China mine production; safe haven metals demand & industrial silver',sig:'bullish'},
+  {t:'PONY',n:'Pony.ai',s:'🤖 Autonomous Vehicles',ind:'Robotaxi / AV Tech',d:'pony.ai',cat:'China robotaxi commercial fleet launch; regulatory approval in Beijing/Shanghai; Toyota partnership',sig:'bullish'},
+  {t:'P',n:'Pandora A/S',s:'❓ Unresolved',ind:'Verify Ticker',d:'pandoragroup.com',cat:'Ticker P — verify company. May be Pandora jewelry ADR or reassigned. Check Yahoo Finance.',sig:'neutral'}
+];
+
+// ─── STATE ───
+let currentStocks = STOCK_CATALOG.map(s => ({...s, price:null, hi52w:null, vol50d:null, q1rev:null, q2rev:null, q3rev:null, q4rev:null, q1eps:null, q2eps:null, annrev:null, nqRevEst:null, nqEpsEst:null}));
+let sortCol = null, sortDir = 'asc';
+let collapsedSectors = {};
+
+// ─── HELPERS ───
+function formatRev(v) {
+  if (v === null || v === undefined) return '—';
+  if (v >= 1e9) return '$'+(v/1e9).toFixed(1)+'B';
+  if (v >= 1e6) return '$'+(v/1e6).toFixed(0)+'M';
+  return '$'+Number(v).toLocaleString();
+}
+function formatEps(v) { return (v !== null && v !== undefined) ? '$'+Number(v).toFixed(2) : '—'; }
+function formatPrice(v) { return (v !== null && v !== undefined) ? '$'+Number(v).toFixed(2) : '—'; }
+function formatVol(v) { return (v !== null && v !== undefined) ? (v/1e6).toFixed(1)+'M' : '—'; }
+function formatPct(a,b) { if(a===null||a===undefined||b===null||b===undefined||b===0) return ''; const p=((a-b)/b*100); return (p>=0?'+':'')+p.toFixed(1)+'%'; }
+function yoyColorCls(a,b) { if(a===null||a===undefined||b===null||b===undefined) return 'text-slate-400'; return a>=b?'text-green-600':'text-red-600'; }
+function pct52w(price, hi) {
+  if(price===null||price===undefined||hi===null||hi===undefined||hi===0) return {txt:'—',cls:'text-slate-400'};
+  const p=((price-hi)/hi*100);
+  const txt=p.toFixed(1)+'%';
+  const cls=p>=-5?'text-green-600':p>=-15?'text-amber-600':p>=-25?'text-orange-600':'text-red-600';
+  return {txt,cls};
+}
+function chunkArray(arr, n) { const r=[]; for(let i=0;i<arr.length;i+=n) r.push(arr.slice(i,i+n)); return r; }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+function signalBadge(sig) {
+  const m = {
+    bullish: {label:'🟢 Bullish',cls:'bg-green-50 text-green-700 border-green-200'},
+    bearish: {label:'🔴 Bearish',cls:'bg-red-50 text-red-700 border-red-200'},
+    neutral: {label:'🟡 Neutral',cls:'bg-amber-50 text-amber-700 border-amber-200'}
+  };
+  const c = m[sig] || m.neutral;
+  return `<span class="inline-block border rounded-full px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap ${c.cls}">${c.label}</span>`;
+}
+
+function tickerPill(ticker) {
+  return `<span class="inline-block bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded">${ticker}</span>`;
+}
+
+function initials(name) {
+  return name.split(/\s+/).map(w=>w[0]).join('').substring(0,2).toUpperCase();
+}
+
+// ─── SECTORS ───
+function getSectors(stocks) {
+  const seen = new Map();
+  stocks.forEach(s => {
+    if (!seen.has(s.s)) seen.set(s.s, []);
+    seen.get(s.s).push(s);
+  });
+  return seen;
+}
+
+// ─── FILTER ───
+function getFilteredStocks() {
+  const sectorVal = document.getElementById('sector-filter-q7r8').value;
+  const signalVal = document.getElementById('signal-filter-s9t0').value;
+  const searchVal = (document.getElementById('search-input-u1v2').value || '').toLowerCase().trim();
+  let filtered = currentStocks;
+  if (sectorVal) filtered = filtered.filter(s => s.s === sectorVal);
+  if (signalVal) filtered = filtered.filter(s => s.sig === signalVal);
+  if (searchVal) filtered = filtered.filter(s => s.t.toLowerCase().includes(searchVal) || s.n.toLowerCase().includes(searchVal));
+  return filtered;
+}
+
+// ─── SORT ───
+function sortStocks(stocks, col, dir) {
+  if (!col) return stocks;
+  const numCols = ['price','hi52w','q2rev','q2eps','q1rev','q1eps','annrev','nqRevEst','nqEpsEst','vol50d'];
+  const isNum = numCols.includes(col);
+  const sigOrder = {bullish:0,neutral:1,bearish:2};
+  return [...stocks].sort((a,b) => {
+    let va, vb;
+    if (col === 'sig') { va = sigOrder[a.sig]||1; vb = sigOrder[b.sig]||1; }
+    else if (col === 't') { va = a.t; vb = b.t; }
+    else if (col === 'n') { va = a.n; vb = b.n; }
+    else { va = a[col]; vb = b[col]; }
+    if (va === null || va === undefined) va = isNum ? -Infinity : '';
+    if (vb === null || vb === undefined) vb = isNum ? -Infinity : '';
+    let cmp;
+    if (isNum || col === 'sig') { cmp = va - vb; } else { cmp = String(va).localeCompare(String(vb)); }
+    return dir === 'asc' ? cmp : -cmp;
+  });
+}
+
+// ─── RENDER TABLE ───
+function renderTable() {
+  const filtered = getFilteredStocks();
+  const tbody = document.getElementById('table-body-k7l8');
+  const sectors = getSectors(filtered);
+  let html = '';
+  let rowIdx = 0;
+
+  // Update sort arrows
+  document.querySelectorAll('th[data-sort] .sort-arrow').forEach(el => { el.textContent = ''; });
+  if (sortCol) {
+    const th = document.querySelector(`th[data-sort="${sortCol}"] .sort-arrow`);
+    if (th) th.textContent = sortDir === 'asc' ? ' ▲' : ' ▼';
+  }
+
+  sectors.forEach((stocks, sectorName) => {
+    const sorted = sortStocks(stocks, sortCol, sortDir);
+    const isCollapsed = !!collapsedSectors[sectorName];
+    html += `<tr class="sector-row cursor-pointer select-none" data-sector="${sectorName}">
+      <td colspan="14" class="px-3 py-2 border-y border-slate-200" style="background:#f1f5f9;">
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] font-semibold text-slate-700 flex items-center gap-1.5">
+            <span class="text-[10px]">${isCollapsed?'▶':'▼'}</span>
+            ${sectorName}
+          </span>
+          <span class="bg-slate-200 text-slate-600 text-[10px] font-semibold px-2 py-0.5 rounded-full">${sorted.length} stock${sorted.length!==1?'s':''}</span>
+        </div>
+      </td>
+    </tr>`;
+
+    if (!isCollapsed) {
+      sorted.forEach(stock => {
+        const stripe = rowIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60';
+        const p52 = pct52w(stock.price, stock.hi52w);
+        const q1yoy = formatPct(stock.q1rev, stock.q3rev);
+        const q1yoyCls = yoyColorCls(stock.q1rev, stock.q3rev);
+        const q2yoy = formatPct(stock.q2rev, stock.q4rev);
+        const q2yoyCls = yoyColorCls(stock.q2rev, stock.q4rev);
+
+        html += `<tr class="${stripe} hover:bg-blue-50/60 transition-colors" style="height:34px;">
+          <td class="sticky-col-1 px-2 py-1.5 border-b border-slate-100" style="width:90px;min-width:90px;">
+            <div class="flex items-center gap-1.5">
+              <img src="https://logo.clearbit.com/${stock.d}" width="18" height="18" alt="" style="border-radius:3px;" class="logo-img flex-shrink-0" data-ticker="${stock.t}" />
+              ${tickerPill(stock.t)}
+            </div>
+          </td>
+          <td class="sticky-col-2 px-2 py-1.5 border-b border-slate-100" style="width:155px;min-width:155px;">
+            <div class="text-[11px] font-semibold text-slate-800 truncate" title="${stock.n}">${stock.n}</div>
+            <div class="text-[10px] text-slate-500 truncate">${stock.ind}</div>
+          </td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 font-medium text-slate-800">${formatPrice(stock.price)}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 font-semibold ${p52.cls}">${p52.txt}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 hide-mobile">
+            <div class="text-slate-800">${formatRev(stock.q2rev)}</div>
+            ${q2yoy ? `<div class="text-[9px] ${q2yoyCls}">${q2yoy}</div>` : ''}
+          </td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800 hide-mobile">${formatEps(stock.q2eps)}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100">
+            <div class="text-slate-800">${formatRev(stock.q1rev)}</div>
+            ${q1yoy ? `<div class="text-[9px] ${q1yoyCls}">${q1yoy}</div>` : ''}
+          </td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800 hide-mobile">${formatEps(stock.q1eps)}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800 hide-mobile">${formatRev(stock.annrev)}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800">${formatRev(stock.nqRevEst)}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-800">${formatEps(stock.nqEpsEst)}</td>
+          <td class="px-2 py-1.5 text-right text-[11px] tabular-nums border-b border-slate-100 text-slate-500 hide-mobile">${formatVol(stock.vol50d)}</td>
+          <td class="px-2 py-1.5 text-[11px] border-b border-slate-100 text-slate-600 hide-mobile" style="max-width:175px;">
+            <div class="truncate" title="${stock.cat}">${stock.cat}</div>
+          </td>
+          <td class="px-2 py-1.5 text-center border-b border-slate-100">${signalBadge(stock.sig)}</td>
+        </tr>`;
+        rowIdx++;
+      });
+    }
+  });
+
+  tbody.innerHTML = html;
+  document.getElementById('stock-count-w3x4').textContent = `${filtered.length} stock${filtered.length!==1?'s':''} shown`;
+
+  // Re-attach sector row click handlers
+  document.querySelectorAll('.sector-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const sec = row.dataset.sector;
+      collapsedSectors[sec] = !collapsedSectors[sec];
+      renderTable();
+    });
+  });
+
+  // Handle broken logo images
+  document.querySelectorAll('.logo-img').forEach(img => {
+    img.addEventListener('error', function() {
+      this.style.display = 'none';
+    });
+  });
+}
+
+// ─── POPULATE SECTOR FILTER ───
+function populateSectorFilter() {
+  const sel = document.getElementById('sector-filter-q7r8');
+  const sectors = [...new Set(STOCK_CATALOG.map(s => s.s))];
+  sectors.forEach(sec => {
+    const opt = document.createElement('option');
+    opt.value = sec;
+    opt.textContent = sec;
+    sel.appendChild(opt);
+  });
+}
+
+// ─── EVENT LISTENERS ───
+
+// Dismiss banners
+document.querySelectorAll('.dismiss-banner-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const target = btn.dataset.target;
+    const el = document.getElementById(target);
+    if (el) { el.style.transition = 'all 0.25s'; el.style.opacity = '0'; el.style.maxHeight = '0'; el.style.marginBottom = '0'; el.style.padding = '0'; el.style.overflow = 'hidden'; setTimeout(() => el.remove(), 300); }
+  });
+});
+
+// Filters
+document.getElementById('sector-filter-q7r8').addEventListener('change', renderTable);
+document.getElementById('signal-filter-s9t0').addEventListener('change', renderTable);
+document.getElementById('search-input-u1v2').addEventListener('input', renderTable);
+
+// Sort
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.sort;
+    if (sortCol === col) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+    else { sortCol = col; sortDir = 'asc'; }
+    renderTable();
+  });
+});
+
+// Upload button
+document.getElementById('upload-btn-c3d4').addEventListener('click', () => {
+  document.getElementById('file-input-e5f6').click();
+});
+
+// File input
+document.getElementById('file-input-e5f6').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const text = evt.target.result;
+    const tickers = text.split(/[\s,;]+/).map(t => t.trim().toUpperCase()).filter(t => t.length > 0 && t.length <= 6);
+    const catalogMap = {};
+    STOCK_CATALOG.forEach(s => catalogMap[s.t] = s);
+    const newStocks = tickers.map(t => {
+      if (catalogMap[t]) return {...catalogMap[t], price:null, hi52w:null, vol50d:null, q1rev:null, q2rev:null, q3rev:null, q4rev:null, q1eps:null, q2eps:null, annrev:null, nqRevEst:null, nqEpsEst:null};
+      return {t, n:'Unknown', s:'❓ Unresolved', ind:'Verify', d:'', cat:'Ticker not in catalog — data will be fetched from Yahoo Finance', sig:'neutral', price:null, hi52w:null, vol50d:null, q1rev:null, q2rev:null, q3rev:null, q4rev:null, q1eps:null, q2eps:null, annrev:null, nqRevEst:null, nqEpsEst:null};
+    });
+    // Deduplicate
+    const seen = new Set();
+    currentStocks = newStocks.filter(s => { if (seen.has(s.t)) return false; seen.add(s.t); return true; });
+    renderTable();
+    showToast(`✅ Loaded ${currentStocks.length} tickers from ER.txt — fetching live data…`);
+    fetchLiveData();
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// Copy button
+document.getElementById('copy-btn-c9d0').addEventListener('click', () => {
+  const filtered = getFilteredStocks();
+  const headers = ['Ticker','Company','Sector','Signal','Price','52W Hi%','Catalyst'];
+  const rows = filtered.map(s => {
+    const p52 = pct52w(s.price, s.hi52w);
+    return [s.t, s.n, s.s, s.sig, formatPrice(s.price), p52.txt, s.cat].join('\t');
+  });
+  const tsv = [headers.join('\t'), ...rows].join('\n');
+  navigator.clipboard.writeText(tsv).then(() => {
+    const ct = document.getElementById('copy-text-e1f2');
+    ct.textContent = '✅ Copied!';
+    setTimeout(() => { ct.textContent = 'Copy'; }, 2000);
+  }).catch(() => {});
+});
+
+// Fetch Live Data
+document.getElementById('fetch-btn-y5z6').addEventListener('click', fetchLiveData);
+
+// ─── TOAST ───
+function showToast(msg) {
+  const toast = document.getElementById('toast-o1p2');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ─── UPDATE STATUS ───
+function updateStatus(msg) {
+  document.getElementById('fetch-status-a7b8').textContent = msg;
+}
+
+// ─── UPDATE STOCK FIELDS ───
+function updateStockField(ticker, field, val) {
+  const stock = currentStocks.find(s => s.t === ticker);
+  if (stock && val !== undefined && val !== null) stock[field] = val;
+}
+
+function updateStockSummary(ticker, data) {
+  const stock = currentStocks.find(s => s.t === ticker);
+  if (!stock) return;
+  if (data.q1rev !== undefined) stock.q1rev = data.q1rev;
+  if (data.q2rev !== undefined) stock.q2rev = data.q2rev;
+  if (data.q3rev !== undefined) stock.q3rev = data.q3rev;
+  if (data.q4rev !== undefined) stock.q4rev = data.q4rev;
+  if (data.q1eps !== undefined) stock.q1eps = data.q1eps;
+  if (data.q2eps !== undefined) stock.q2eps = data.q2eps;
+  if (data.annrev !== undefined) stock.annrev = data.annrev;
+  if (data.nqRevEst !== undefined) stock.nqRevEst = data.nqRevEst;
+  if (data.nqEpsEst !== undefined) stock.nqEpsEst = data.nqEpsEst;
+}
+
+// ─── FETCH LIVE DATA ───
+const PROXY = 'https://corsproxy.io/?url=';
+
+async function fetchLiveData() {
+  const btn = document.getElementById('fetch-btn-y5z6');
+  btn.disabled = true;
+  btn.classList.add('opacity-50','cursor-not-allowed');
+  updateStatus('Fetching quotes…');
+
+  // Step 1: batch quote fetch
+  const tickers = currentStocks.map(s => s.t).join(',');
+  try {
+    const quoteUrl = PROXY + encodeURIComponent(
+      'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + tickers + '&fields=regularMarketPrice,fiftyTwoWeekHigh,averageDailyVolume10Day,regularMarketVolume,fiftyDayAverageVolume'
+    );
+    const res = await fetch(quoteUrl);
+    const data = await res.json();
+    const quotes = (data && data.quoteResponse && data.quoteResponse.result) || [];
+    quotes.forEach(q => {
+      updateStockField(q.symbol, 'price', q.regularMarketPrice);
+      updateStockField(q.symbol, 'hi52w', q.fiftyTwoWeekHigh);
+      updateStockField(q.symbol, 'vol50d', q.fiftyDayAverageVolume || q.averageDailyVolume10Day);
+    });
+    renderTable();
+  } catch(e) {
+    updateStatus('Quote fetch failed — deploy to Vercel for live data');
+    btn.disabled = false;
+    btn.classList.remove('opacity-50','cursor-not-allowed');
+    return;
+  }
+
+  // Step 2: per-ticker summary in batches of 5
+  const batches = chunkArray(currentStocks, 5);
+  let done = 0;
+  for (const batch of batches) {
+    await Promise.all(batch.map(async stock => {
+      try {
+        const sumUrl = PROXY + encodeURIComponent(
+          'https://query1.finance.yahoo.com/v10/finance/quoteSummary/' + stock.t + '?modules=incomeStatementHistoryQuarterly,earningsTrend'
+        );
+        const res = await fetch(sumUrl);
+        const data = await res.json();
+        const qs = data && data.quoteSummary && data.quoteSummary.result && data.quoteSummary.result[0];
+        if (qs) {
+          const iQ = (qs.incomeStatementHistoryQuarterly && qs.incomeStatementHistoryQuarterly.incomeStatementHistory) || [];
+          const trend = (qs.earningsTrend && qs.earningsTrend.trend) || [];
+          const q1rev = iQ[0] && iQ[0].totalRevenue ? iQ[0].totalRevenue.raw : null;
+          const q2rev = iQ[1] && iQ[1].totalRevenue ? iQ[1].totalRevenue.raw : null;
+          const q3rev = iQ[4] && iQ[4].totalRevenue ? iQ[4].totalRevenue.raw : null;
+          const q4rev = iQ[5] && iQ[5].totalRevenue ? iQ[5].totalRevenue.raw : null;
+          const q1eps = iQ[0] && iQ[0].dilutedEPS ? iQ[0].dilutedEPS.raw : null;
+          const q2eps = iQ[1] && iQ[1].dilutedEPS ? iQ[1].dilutedEPS.raw : null;
+          const annrev = ((iQ[0] && iQ[0].totalRevenue ? iQ[0].totalRevenue.raw : 0) +
+                          (iQ[1] && iQ[1].totalRevenue ? iQ[1].totalRevenue.raw : 0) +
+                          (iQ[2] && iQ[2].totalRevenue ? iQ[2].totalRevenue.raw : 0) +
+                          (iQ[3] && iQ[3].totalRevenue ? iQ[3].totalRevenue.raw : 0)) || null;
+          const nqRevEst = trend[0] && trend[0].revenueEstimate && trend[0].revenueEstimate.avg ? trend[0].revenueEstimate.avg.raw : null;
+          const nqEpsEst = trend[0] && trend[0].earningsEstimate && trend[0].earningsEstimate.avg ? trend[0].earningsEstimate.avg.raw : null;
+          updateStockSummary(stock.t, {q1rev,q2rev,q3rev,q4rev,q1eps,q2eps,annrev,nqRevEst,nqEpsEst});
+        }
+      } catch(e) { /* silently skip */ }
+      done++;
+      updateStatus('Fetching ' + done + '/' + currentStocks.length + '…');
+    }));
+    renderTable();
+    await sleep(300);
+  }
+
+  updateStatus('✅ ' + currentStocks.length + ' stocks loaded — Yahoo Finance');
+  btn.disabled = false;
+  btn.classList.remove('opacity-50','cursor-not-allowed');
+  showToast('✅ Live data fetched for ' + currentStocks.length + ' stocks');
+}
+
+// ─── INIT ───
+populateSectorFilter();
+renderTable();
+</script>
+</body>
+</html>
