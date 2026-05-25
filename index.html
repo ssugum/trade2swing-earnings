@@ -157,61 +157,61 @@ th[data-sort]:hover { color: #1e293b; }
 <div data-id="50" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-2">
   <div data-id="51" class="flex items-start gap-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-md">
     <i data-id="52" data-lucide="info" class="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5"></i>
-    <p data-id="53" class="text-[11px] text-blue-700 leading-relaxed">Preview shows catalog data. Click <strong data-id="54">'Fetch Live Data'</strong> on Vercel deployment to populate prices, volume &amp; financials from Yahoo Finance. 50-day avg volume via Yahoo Finance (FMP fallback). © trade2swing</p>
+    <p data-id="53" class="text-[11px] text-blue-700 leading-relaxed">💡 Catalog data (sector, catalyst, signal) is always shown. Live prices &amp; financials load from Finnhub via Vercel API. Requires api/quote.js in your GitHub repo — see deployment guide. © trade2swing</p>
   </div>
 </div>
 
 <!-- MAIN TABLE -->
-<main data-id="55" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-3 mb-6">
-  <div data-id="56" class="bg-white rounded-lg border border-slate-200 shadow-sm">
+<main data-id="54" class="max-w-[1400px] mx-auto px-4 md:px-6 mt-3 mb-6">
+  <div data-id="55" class="bg-white rounded-lg border border-slate-200 shadow-sm">
     <!-- Table Toolbar -->
-    <div data-id="57" class="flex items-center justify-between px-3 py-2 border-b border-slate-100">
-      <h2 data-id="58" class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-        <i data-id="59" data-lucide="table-2" class="w-4 h-4 text-slate-400"></i>
+    <div data-id="56" class="flex items-center justify-between px-3 py-2 border-b border-slate-100">
+      <h2 data-id="57" class="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+        <i data-id="58" data-lucide="table-2" class="w-4 h-4 text-slate-400"></i>
         Earnings Calendar
       </h2>
-      <button data-id="60" id="copy-btn-c9d0" class="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 border border-slate-200 rounded px-2 py-1 transition-colors">
-        <i data-id="61" data-lucide="clipboard-copy" class="w-3 h-3"></i>
-        <span data-id="62" id="copy-text-e1f2">Copy</span>
+      <button data-id="59" id="copy-btn-c9d0" class="flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 border border-slate-200 rounded px-2 py-1 transition-colors">
+        <i data-id="60" data-lucide="clipboard-copy" class="w-3 h-3"></i>
+        <span data-id="61" id="copy-text-e1f2">Copy</span>
       </button>
     </div>
     <!-- Table Scroll Container -->
-    <div data-id="63" id="table-wrap-g3h4" class="overflow-x-auto">
-      <table data-id="64" id="main-table-i5j6" class="w-full text-left border-collapse" style="min-width:1200px;">
-        <thead data-id="65">
-          <tr data-id="66" class="bg-slate-50 border-b-2 border-slate-200">
-            <th data-id="67" class="sticky-col-1 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:90px;min-width:90px;" data-sort="t">Ticker <span data-id="68" class="sort-arrow"></span></th>
-            <th data-id="69" class="sticky-col-2 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:155px;min-width:155px;" data-sort="n">Company / Sector <span data-id="70" class="sort-arrow"></span></th>
-            <th data-id="71" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:68px;" data-sort="price">Price <span data-id="72" class="sort-arrow"></span></th>
-            <th data-id="73" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="hi52w">52W Hi% <span data-id="74" class="sort-arrow"></span></th>
-            <th data-id="75" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="q2rev">Q−2 Rev <span data-id="76" class="sort-arrow"></span></th>
-            <th data-id="77" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q2eps">Q−2 EPS <span data-id="78" class="sort-arrow"></span></th>
-            <th data-id="79" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:78px;" data-sort="q1rev">Q−1 Rev <span data-id="80" class="sort-arrow"></span></th>
-            <th data-id="81" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q1eps">Q−1 EPS <span data-id="82" class="sort-arrow"></span></th>
-            <th data-id="83" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="annrev">Ann Rev <span data-id="84" class="sort-arrow"></span></th>
-            <th data-id="85" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:82px;" data-sort="nqrevest">NQ Rev Est <span data-id="86" class="sort-arrow"></span></th>
-            <th data-id="87" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="nqepsest">NQ EPS Est <span data-id="88" class="sort-arrow"></span></th>
-            <th data-id="89" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:72px;" data-sort="vol50d">50D Vol <span data-id="90" class="sort-arrow"></span></th>
-            <th data-id="91" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold hide-mobile" style="width:175px;">Catalyst</th>
-            <th data-id="92" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-center" style="width:72px;" data-sort="sig">Signal <span data-id="93" class="sort-arrow"></span></th>
+    <div data-id="62" id="table-wrap-g3h4" class="overflow-x-auto">
+      <table data-id="63" id="main-table-i5j6" class="w-full text-left border-collapse" style="min-width:1200px;">
+        <thead data-id="64">
+          <tr data-id="65" class="bg-slate-50 border-b-2 border-slate-200">
+            <th data-id="66" class="sticky-col-1 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:90px;min-width:90px;" data-sort="t">Ticker <span data-id="67" class="sort-arrow"></span></th>
+            <th data-id="68" class="sticky-col-2 px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold" style="width:155px;min-width:155px;" data-sort="n">Company / Sector <span data-id="69" class="sort-arrow"></span></th>
+            <th data-id="70" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:68px;" data-sort="price">Price <span data-id="71" class="sort-arrow"></span></th>
+            <th data-id="72" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="hi52w">52W Hi% <span data-id="73" class="sort-arrow"></span></th>
+            <th data-id="74" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="q2rev">Q−2 Rev <span data-id="75" class="sort-arrow"></span></th>
+            <th data-id="76" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q2eps">Q−2 EPS <span data-id="77" class="sort-arrow"></span></th>
+            <th data-id="78" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:78px;" data-sort="q1rev">Q−1 Rev <span data-id="79" class="sort-arrow"></span></th>
+            <th data-id="80" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:62px;" data-sort="q1eps">Q−1 EPS <span data-id="81" class="sort-arrow"></span></th>
+            <th data-id="82" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:78px;" data-sort="annrev">Ann Rev <span data-id="83" class="sort-arrow"></span></th>
+            <th data-id="84" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:82px;" data-sort="nqRevEst">NQ Rev Est <span data-id="85" class="sort-arrow"></span></th>
+            <th data-id="86" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right" style="width:65px;" data-sort="nqEpsEst">NQ EPS Est <span data-id="87" class="sort-arrow"></span></th>
+            <th data-id="88" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-right hide-mobile" style="width:72px;" data-sort="vol50d">50D Vol <span data-id="89" class="sort-arrow"></span></th>
+            <th data-id="90" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold hide-mobile" style="width:175px;">Catalyst</th>
+            <th data-id="91" class="px-2 py-2.5 text-[10px] uppercase tracking-wider text-slate-500 font-semibold text-center" style="width:72px;" data-sort="sig">Signal <span data-id="92" class="sort-arrow"></span></th>
           </tr>
         </thead>
-        <tbody data-id="94" id="table-body-k7l8"></tbody>
+        <tbody data-id="93" id="table-body-k7l8"></tbody>
       </table>
     </div>
   </div>
 </main>
 
 <!-- FOOTER -->
-<footer data-id="95" id="footer-m9n0" class="w-full border-t border-slate-200" style="background:#f8fafc;">
-  <div data-id="96" class="max-w-[1400px] mx-auto px-4 py-3 text-center">
-    <p data-id="97" class="text-[10px] text-slate-400 leading-relaxed">© trade2swing · All rights reserved | Weekly Earnings Analysis — May 26, 2026 | Data: Yahoo Finance (50-day avg vol via Yahoo Finance; FMP fallback) | Not financial advice | trade2swing.substack.com</p>
-    <p data-id="98" class="text-[10px] text-slate-300 mt-1">Made by Copilot</p>
+<footer data-id="94" id="footer-m9n0" class="w-full border-t border-slate-200" style="background:#f8fafc;">
+  <div data-id="95" class="max-w-[1400px] mx-auto px-4 py-3 text-center">
+    <p data-id="96" class="text-[10px] text-slate-400 leading-relaxed">© trade2swing · All rights reserved | Weekly Earnings Analysis — May 26, 2026 | Data: Finnhub (price, 52W high, 50-day avg vol, quarterly financials) | Not financial advice | trade2swing.substack.com</p>
+    <p data-id="97" class="text-[10px] text-slate-300 mt-1">Made by Copilot</p>
   </div>
 </footer>
 
 <!-- TOAST -->
-<div data-id="99" id="toast-o1p2" class="toast"></div>
+<div data-id="98" id="toast-o1p2" class="toast"></div>
 
 <script>
 lucide.createIcons();
@@ -276,26 +276,36 @@ let sortCol = null, sortDir = 'asc';
 let collapsedSectors = {};
 
 // ─── HELPERS ───
+function chunkArray(arr, n) { const r=[]; for(let i=0;i<arr.length;i+=n) r.push(arr.slice(i,i+n)); return r; }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
 function formatRev(v) {
-  if (v === null || v === undefined) return '—';
+  if (v == null) return '—';
   if (v >= 1e9) return '$'+(v/1e9).toFixed(1)+'B';
   if (v >= 1e6) return '$'+(v/1e6).toFixed(0)+'M';
   return '$'+Number(v).toLocaleString();
 }
-function formatEps(v) { return (v !== null && v !== undefined) ? '$'+Number(v).toFixed(2) : '—'; }
-function formatPrice(v) { return (v !== null && v !== undefined) ? '$'+Number(v).toFixed(2) : '—'; }
-function formatVol(v) { return (v !== null && v !== undefined) ? (v/1e6).toFixed(1)+'M' : '—'; }
-function formatPct(a,b) { if(a===null||a===undefined||b===null||b===undefined||b===0) return ''; const p=((a-b)/b*100); return (p>=0?'+':'')+p.toFixed(1)+'%'; }
-function yoyColorCls(a,b) { if(a===null||a===undefined||b===null||b===undefined) return 'text-slate-400'; return a>=b?'text-green-600':'text-red-600'; }
+function formatEps(v) {
+  if (v == null) return '—';
+  return (v >= 0 ? '$' : '-$') + Math.abs(v).toFixed(2);
+}
+function formatPrice(v) {
+  if (v == null) return '—';
+  return '$'+Number(v).toFixed(2);
+}
+function formatVol(v) {
+  if (v == null) return '—';
+  return (v/1e6).toFixed(1)+'M';
+}
+function formatPct(a,b) { if(a==null||b==null||b===0) return ''; const p=((a-b)/b*100); return (p>=0?'+':'')+p.toFixed(1)+'%'; }
+function yoyColorCls(a,b) { if(a==null||b==null) return 'text-slate-400'; return a>=b?'text-green-600':'text-red-600'; }
 function pct52w(price, hi) {
-  if(price===null||price===undefined||hi===null||hi===undefined||hi===0) return {txt:'—',cls:'text-slate-400'};
+  if(price==null||hi==null||hi===0) return {txt:'—',cls:'text-slate-400'};
   const p=((price-hi)/hi*100);
   const txt=p.toFixed(1)+'%';
   const cls=p>=-5?'text-green-600':p>=-15?'text-amber-600':p>=-25?'text-orange-600':'text-red-600';
   return {txt,cls};
 }
-function chunkArray(arr, n) { const r=[]; for(let i=0;i<arr.length;i+=n) r.push(arr.slice(i,i+n)); return r; }
-function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
 
 function signalBadge(sig) {
   const m = {
@@ -574,75 +584,71 @@ function updateStockSummary(ticker, data) {
   if (data.nqEpsEst !== undefined) stock.nqEpsEst = data.nqEpsEst;
 }
 
-// ─── FETCH LIVE DATA ───
-const PROXY = 'https://corsproxy.io/?url=';
-
+// ─── FETCH LIVE DATA (Vercel API → Finnhub) ───
 async function fetchLiveData() {
   const btn = document.getElementById('fetch-btn-y5z6');
   btn.disabled = true;
   btn.classList.add('opacity-50','cursor-not-allowed');
-  updateStatus('Fetching quotes…');
 
-  // Step 1: batch quote fetch
+  // STEP 1: Batch quote fetch (price, 52W high, 50D avg vol) via Finnhub
   const tickers = currentStocks.map(s => s.t).join(',');
+  updateStatus('Fetching live quotes via Finnhub...');
   try {
-    const quoteUrl = PROXY + encodeURIComponent(
-      'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + tickers + '&fields=regularMarketPrice,fiftyTwoWeekHigh,averageDailyVolume10Day,regularMarketVolume,fiftyDayAverageVolume'
-    );
-    const res = await fetch(quoteUrl);
+    const res = await fetch(`/api/quote?symbols=${encodeURIComponent(tickers)}`);
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || `API error ${res.status}`);
+    }
     const data = await res.json();
-    const quotes = (data && data.quoteResponse && data.quoteResponse.result) || [];
+    if (data.error) throw new Error(data.error);
+    // Finnhub response shape: { quotes: [{symbol, price, changePercent, hi52w, vol50d}, ...] }
+    const quotes = data.quotes || [];
     quotes.forEach(q => {
-      updateStockField(q.symbol, 'price', q.regularMarketPrice);
-      updateStockField(q.symbol, 'hi52w', q.fiftyTwoWeekHigh);
-      updateStockField(q.symbol, 'vol50d', q.fiftyDayAverageVolume || q.averageDailyVolume10Day);
+      updateStockField(q.symbol, 'price', q.price);
+      updateStockField(q.symbol, 'hi52w', q.hi52w);
+      updateStockField(q.symbol, 'vol50d', q.vol50d);
     });
     renderTable();
+    updateStatus(`Quotes loaded · fetching quarterly financials...`);
   } catch(e) {
-    updateStatus('Quote fetch failed — deploy to Vercel for live data');
+    updateStatus('⚠️ Quote fetch failed: ' + e.message);
     btn.disabled = false;
     btn.classList.remove('opacity-50','cursor-not-allowed');
     return;
   }
 
-  // Step 2: per-ticker summary in batches of 5
+  // STEP 2: Per-ticker summary (quarterly revenue, EPS, estimates) via Finnhub
+  // Batches of 5 with delay matches the throttle inside api/quote.js
   const batches = chunkArray(currentStocks, 5);
   let done = 0;
   for (const batch of batches) {
     await Promise.all(batch.map(async stock => {
       try {
-        const sumUrl = PROXY + encodeURIComponent(
-          'https://query1.finance.yahoo.com/v10/finance/quoteSummary/' + stock.t + '?modules=incomeStatementHistoryQuarterly,earningsTrend'
-        );
-        const res = await fetch(sumUrl);
+        const res = await fetch(`/api/quote?symbols=${encodeURIComponent(stock.t)}&type=summary`);
+        if (!res.ok) throw new Error();
         const data = await res.json();
-        const qs = data && data.quoteSummary && data.quoteSummary.result && data.quoteSummary.result[0];
-        if (qs) {
-          const iQ = (qs.incomeStatementHistoryQuarterly && qs.incomeStatementHistoryQuarterly.incomeStatementHistory) || [];
-          const trend = (qs.earningsTrend && qs.earningsTrend.trend) || [];
-          const q1rev = iQ[0] && iQ[0].totalRevenue ? iQ[0].totalRevenue.raw : null;
-          const q2rev = iQ[1] && iQ[1].totalRevenue ? iQ[1].totalRevenue.raw : null;
-          const q3rev = iQ[4] && iQ[4].totalRevenue ? iQ[4].totalRevenue.raw : null;
-          const q4rev = iQ[5] && iQ[5].totalRevenue ? iQ[5].totalRevenue.raw : null;
-          const q1eps = iQ[0] && iQ[0].dilutedEPS ? iQ[0].dilutedEPS.raw : null;
-          const q2eps = iQ[1] && iQ[1].dilutedEPS ? iQ[1].dilutedEPS.raw : null;
-          const annrev = ((iQ[0] && iQ[0].totalRevenue ? iQ[0].totalRevenue.raw : 0) +
-                          (iQ[1] && iQ[1].totalRevenue ? iQ[1].totalRevenue.raw : 0) +
-                          (iQ[2] && iQ[2].totalRevenue ? iQ[2].totalRevenue.raw : 0) +
-                          (iQ[3] && iQ[3].totalRevenue ? iQ[3].totalRevenue.raw : 0)) || null;
-          const nqRevEst = trend[0] && trend[0].revenueEstimate && trend[0].revenueEstimate.avg ? trend[0].revenueEstimate.avg.raw : null;
-          const nqEpsEst = trend[0] && trend[0].earningsEstimate && trend[0].earningsEstimate.avg ? trend[0].earningsEstimate.avg.raw : null;
-          updateStockSummary(stock.t, {q1rev,q2rev,q3rev,q4rev,q1eps,q2eps,annrev,nqRevEst,nqEpsEst});
+        // Finnhub response shape: { symbol, summary: { q1rev, q2rev, annrev, q1eps, q2eps, nqRevEst, nqEpsEst } }
+        const s = data?.summary;
+        if (s) {
+          updateStockSummary(stock.t, {
+            q1rev:     s.q1rev     ?? null,
+            q2rev:     s.q2rev     ?? null,
+            q1eps:     s.q1eps     ?? null,
+            q2eps:     s.q2eps     ?? null,
+            annrev:    s.annrev    ?? null,
+            nqRevEst:  s.nqRevEst  ?? null,
+            nqEpsEst:  s.nqEpsEst  ?? null,
+          });
         }
-      } catch(e) { /* silently skip */ }
+      } catch(e) { /* silently skip — catalog data still shown */ }
       done++;
-      updateStatus('Fetching ' + done + '/' + currentStocks.length + '…');
+      updateStatus(`Fetching financials ${done}/${currentStocks.length}...`);
     }));
     renderTable();
-    await sleep(300);
+    await sleep(1200); // match server-side throttle gap between Finnhub batches
   }
 
-  updateStatus('✅ ' + currentStocks.length + ' stocks loaded — Yahoo Finance');
+  updateStatus(`✅ ${currentStocks.length} stocks loaded · Finnhub · ${new Date().toLocaleTimeString()}`);
   btn.disabled = false;
   btn.classList.remove('opacity-50','cursor-not-allowed');
   showToast('✅ Live data fetched for ' + currentStocks.length + ' stocks');
